@@ -308,7 +308,7 @@
                 </div>
                 <hr style="border:none; border-top:1px dashed #eee; margin:15px 0;">
                 <div class="popup-item">
-                    <div><strong>Update. 25.05.14</strong></div>
+                    <div><strong>Update. 25.05.22</strong></div>
                 </div>
             </div>
     
@@ -344,7 +344,11 @@
         </label>
         <label>
             <input type="checkbox" id="서울시 마포구-1" onchange="toggleData('서울시 마포구-1', './서울시 마포구-1.geojson')">
-            서울시 마포구
+            서울시 마포구-1
+        </label>
+        <label>
+            <input type="checkbox" id="서울시 마포구-2" onchange="toggleData('서울시 마포구-2', './서울시 마포구-2.geojson')">
+            서울시 마포구-2
         </label>
         <label>
             <input type="checkbox" id="서울시 용산구-1" onchange="toggleData('서울시 용산구-1', './서울시 용산구-1.geojson')">
@@ -840,7 +844,7 @@ function addNewTags() {
 
 // 변경 태그 추가 
 function addChangedTags() {
-    const newItems = ['울산광역시'];
+    const newItems = ['서울시 마포구-1','서울시 마포구-2','서울시 양천구-1'];
     newItems.forEach(id => {
         const checkbox = document.getElementById(id);
         if (checkbox) {
