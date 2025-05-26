@@ -747,9 +747,12 @@
         }
 
         function getPolygonCenter(path) {
-            var bounds = new kakao.maps.LatLngBounds();
-            path.forEach(coord => bounds.extend(coord));
-            return bounds.getCenter();
+            var sumLat = 0, sumLng = 0, len = path.length;
+            path.forEach(coord => {
+                sumLat += coord.getLat();
+                sumLng += coord.getLng();
+            });
+            return new kakao.maps.LatLng(sumLat / len, sumLng / len);
         }
 
         function resetSelections() {
