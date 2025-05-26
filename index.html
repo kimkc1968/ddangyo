@@ -248,6 +248,10 @@
             margin-right: 5px;
             vertical-align: middle;
         }
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
         /* 팝업 배경 스타일 */
         .popup-overlay {
             position: fixed;
@@ -345,6 +349,16 @@
             color:#fff;
             font-size:13px;
         }
+
+        label.checked {
+            background-color: #e6f0ff; /* 옅은 파란색 */
+            border-radius: 6px;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
         /* 로고와 타이틀 스타일 */
         #logo-container {
             text-align: center;
@@ -377,7 +391,6 @@
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
         }
-        
         .tab.active {
             font-weight: bold;
             background: white;
@@ -391,6 +404,17 @@
         .tab-content.active {
             display: block;
         }
+        .toggle-button {
+            background-color: #f0f0f0;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .toggle-button.active {
+            background-color: #FF0000;
+            color: #fff;
+        }
+        
     </style>
 </head>
 <body>
@@ -483,7 +507,7 @@
         
         <div class="tab-buttons">
             <button class="tab active" onclick="showTab('seoul')">서울</button>
-            <button class="tab" onclick="showTab('gyeonggi')">경기</button>
+            <button class="tab" onclick="showTab('gyeong-in')">경인</button>
             <button class="tab" onclick="showTab('local')">지방</button>
         </div>
 
@@ -620,8 +644,8 @@
             서울시 송파구-5
         </label>
         </div>
-        <div id="gyeonggi" class="tab-content">
-            <button class="toggle-button" onclick="toggleAllInTab('gyeonggi')">전체 선택</button>
+        <div id="gyeong-in" class="tab-content">
+            <button class="toggle-button" onclick="toggleAllInTab('gyeong-in')">전체 선택</button>
             <h3>경기도</h3>
         <label>
             <input type="checkbox" id="경기도 김포시-1" onchange="toggleData('경기도 김포시-1', './경기도 김포시-1.geojson')">
@@ -913,12 +937,20 @@
 
         function showTab(tabId) {
             document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.display = 'none';  // 숨김
+            });
         
-            document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            const tabButton = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
+            const tabContent = document.getElementById(tabId);
+        
+            if (tabButton) tabButton.classList.add('active');
+            if (tabContent) {
+                tabContent.classList.add('active');
+                tabContent.style.display = 'block';  // ✅ 이거 추가해야 복원됨
+            }
         }
-        
 
         function getPolygonCenter(path) {
             var sumLat = 0, sumLng = 0, len = path.length;
@@ -948,19 +980,73 @@
         }
 
         function filterCheckboxes() {
-            var query = document.getElementById('searchBox').value.toLowerCase();
-            var labels = document.querySelectorAll('#controls label');
-            var count = 0;
-            labels.forEach(label => {
-                var text = label.innerText.toLowerCase();
-                if (text.includes(query)) {
-                    label.style.display = 'block';
-                    count++;
-                } else {
-                    label.style.display = 'none';
+            const query = document.getElementById('searchBox').value.trim().toLowerCase();
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab');
+            const searchResultCount = document.getElementById('searchResultCount');
+            let count = 0;
+        
+            // 현재 활성 탭 ID 저장
+            let activeTabId = 'seoul';
+            document.querySelectorAll('.tab').forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    const match = btn.getAttribute('onclick').match(/showTab\('(.+?)'\)/);
+                    if (match) activeTabId = match[1];
                 }
             });
-            document.getElementById('searchResultCount').textContent = `검색 결과: ${count}개`;
+        
+            // ✅ 검색어 없음 → 전체 복원
+            if (query === '') {
+                tabButtons.forEach(btn => btn.style.display = 'inline-block');
+        
+                tabContents.forEach(tab => {
+                    tab.style.display = 'none'; // 일단 숨기고 showTab으로 열기
+        
+                    // 모든 label, h3, 버튼 보이게
+                    tab.querySelectorAll('label').forEach(label => {
+                        label.style.display = 'block';
+                    });
+                    tab.querySelectorAll('h3').forEach(h => h.style.display = 'block');
+                    tab.querySelectorAll('.toggle-button').forEach(b => b.style.display = 'block');
+                });
+        
+                searchResultCount.textContent = `검색 결과: 0개`;
+        
+                // 원래 탭 복원
+                showTab(activeTabId);
+                const currentTab = document.getElementById(activeTabId);
+                if (currentTab) currentTab.style.display = 'block';
+        
+                return;
+            }
+        
+            // ✅ 검색 중: 탭 전부 보이게 하고 label만 필터링
+            tabButtons.forEach(btn => btn.style.display = 'none');
+        
+            tabContents.forEach(tab => {
+                let hasMatch = false;
+        
+                tab.style.display = 'block';
+        
+                tab.querySelectorAll('label').forEach(label => {
+                    const text = label.innerText.toLowerCase();
+                    const match = text.includes(query);
+                    label.style.display = match ? 'block' : 'none';
+                    if (match) {
+                        hasMatch = true;
+                        count++;
+                    }
+                });
+        
+                // ✅ 시도명(h3), 전체선택 버튼 숨김
+                tab.querySelectorAll('h3').forEach(h => h.style.display = 'none');
+                tab.querySelectorAll('.toggle-button').forEach(b => b.style.display = 'none');
+        
+                // 해당 탭에 일치하는 label이 없으면 전체 숨김
+                tab.style.display = hasMatch ? 'block' : 'none';
+            });
+        
+            searchResultCount.textContent = `검색 결과: ${count}개`;
         }
 
         function toggleAllInTab(tabId) {
@@ -1007,6 +1093,12 @@
             });
         
             toggleButton.textContent = allChecked ? '전체 선택' : '전체 해제';
+            // ✅ 버튼 색상 토글
+            if (!allChecked) {
+                toggleButton.classList.add('active');
+            } else {
+                toggleButton.classList.remove('active');
+            }
         }                 
 
         function getGeoJsonPathById(id) {
