@@ -445,6 +445,18 @@
             align-items: center;
             justify-content: flex-start;
         }
+
+        #showTestAreasButton.active {
+            background: linear-gradient(135deg, #10b981, #059669); /* 녹색 계열 */
+            color: white;
+            font-weight: bold;
+        }
+        
+        .toggle-button.active {
+            background: #3b82f6;
+            color: white;
+            font-weight: bold;
+        }
         
     </style>
 </head>
@@ -1026,52 +1038,89 @@
             // 검색창 초기화
             document.getElementById('searchBox').value = '';
         
-            // 필터 다시 적용해서 모두 보이게
-            filterCheckboxes();
-        }
-
-        function filterCheckboxes() {
-            const input = document.getElementById('searchBox').value.toLowerCase();
+            // ✅ 숨겨진 라벨, 제목, 토글버튼, 탭 모두 다시 보이도록 복원
             const labels = document.querySelectorAll('#controls label');
-            const tabContents = document.querySelectorAll('.tab-content');
-            const tabButtons = document.querySelectorAll('.tab');
+            labels.forEach(label => label.style.display = 'flex');
+        
             const headings = document.querySelectorAll('.tab-content h3');
+            headings.forEach(h => h.style.display = 'block');
+        
             const toggleButtons = document.querySelectorAll('.tab-content .toggle-button');
-            let matchCount = 0;
-            const visibleTabs = new Set();
+            toggleButtons.forEach(btn => btn.style.display = 'inline-block');
         
-            // 모두 숨김
-            labels.forEach(label => label.style.display = 'none');
-            tabContents.forEach(tab => tab.style.display = 'none');
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.style.display = 'block');
+        
+            const tabButtons = document.querySelectorAll('.tab');
             tabButtons.forEach(btn => btn.classList.remove('active'));
-            headings.forEach(h => h.style.display = 'none');
-            toggleButtons.forEach(btn => btn.style.display = 'none');
         
-            labels.forEach(label => {
-                const text = label.textContent.toLowerCase();
-                if (text.includes(input)) {
-                    label.style.display = 'flex';
-                    const tab = label.closest('.tab-content');
-                    if (tab) {
-                        tab.style.display = 'block';
-                        visibleTabs.add(tab.id);
-                    }
-                    matchCount++;
-                }
-            });
+            // 기본 탭 다시 활성화 (예: 서울)
+            const defaultTab = document.querySelector('.tab[onclick="showTab(\'seoul\')]');
+            if (defaultTab) defaultTab.classList.add('active');
         
-            visibleTabs.forEach(tabId => {
-                const tabBtn = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
-                if (tabBtn) tabBtn.classList.add('active');
-            });
+            const defaultTabContent = document.getElementById('seoul');
+            if (defaultTabContent) defaultTabContent.style.display = 'block';
         
-            // 검색 결과 표시
+            // 검색 결과 초기화
             const result = document.getElementById('searchResultCount');
-            if (result) result.textContent = `검색 결과: ${matchCount}개`;
+            if (result) result.textContent = `검색 결과: 0개`;
         }
-        
 
-        
+function filterCheckboxes() {
+    const input = document.getElementById('searchBox').value.toLowerCase();
+    const labels = document.querySelectorAll('#controls label');
+    const tabs = document.querySelectorAll('.tab-content');
+    const tabButtons = document.querySelectorAll('.tab');
+    const headings = document.querySelectorAll('.tab-content h3');
+    const toggleButtons = document.querySelectorAll('.tab-content .toggle-button');
+    let matchCount = 0;
+    const matchedTabs = new Set();
+
+    // 모든 label 숨김
+    labels.forEach(label => label.style.display = 'none');
+    // 모든 탭 숨김
+    tabs.forEach(tab => tab.style.display = 'none');
+    // 모든 탭 버튼 비활성화
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    // h3, toggle 버튼 숨김
+    headings.forEach(h => h.style.display = 'none');
+    toggleButtons.forEach(btn => btn.style.display = 'none');
+
+    // 일치 항목만 처리
+    labels.forEach(label => {
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        if (!checkbox) return;
+
+        const labelText = label.textContent.toLowerCase();
+        if (labelText.includes(input)) {
+            label.style.display = 'flex';
+            const tab = label.closest('.tab-content');
+            if (tab) {
+                matchedTabs.add(tab.id); // 해당 탭 기록
+            }
+            matchCount++;
+        }
+    });
+
+    // 일치한 탭만 표시 + 헤더/버튼 복원
+    matchedTabs.forEach(tabId => {
+        const tab = document.getElementById(tabId);
+        if (tab) tab.style.display = 'block';
+
+        const tabBtn = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
+        if (tabBtn) tabBtn.classList.add('active');
+
+        const h3 = tab.querySelector('h3');
+        const toggleBtn = tab.querySelector('.toggle-button');
+        if (h3) h3.style.display = 'block';
+        if (toggleBtn) toggleBtn.style.display = 'inline-block';
+    });
+
+    // 검색 결과 갱신
+    const result = document.getElementById('searchResultCount');
+    if (result) result.textContent = `검색 결과: ${matchCount}개`;
+}
+
 
         function toggleAllInTab(tabId) {
             const tab = document.getElementById(tabId);
@@ -1205,27 +1254,59 @@
         });
 
         document.getElementById('showTestAreasButton').addEventListener('click', function () {
+            const button = this;
+            const isActive = button.classList.contains('active');
+        
+            // 상태 토글
+            button.classList.toggle('active', !isActive);
+            button.innerHTML = isActive
+                ? '<i class="fa-solid fa-vial" style="margin-right: 6px;"></i> 테스트 지역만 보기'
+                : '<i class="fa-solid fa-list" style="margin-right: 6px;"></i> 전체 보기로 돌아가기';
+        
+            // ✅ 전체 보기로 돌아가기인 경우 → 체크 해제 + UI 복원
+            if (isActive) {
+                // 체크 해제
+                const checkboxes = document.querySelectorAll('#controls input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    cb.checked = false;
+                    cb.dispatchEvent(new Event('change'));
+                });
+        
+                // UI 복원
+                const labels = document.querySelectorAll('#controls label');
+                labels.forEach(label => label.style.display = 'flex');
+                document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'block');
+                document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.tab[onclick="showTab(\'seoul\')"]').classList.add('active');
+                document.getElementById('seoul').style.display = 'block';
+        
+                document.querySelectorAll('.tab-content h3').forEach(h => h.style.display = 'block');
+                document.querySelectorAll('.tab-content .toggle-button').forEach(btn => btn.style.display = 'inline-block');
+        
+                const result = document.getElementById('searchResultCount');
+                if (result) result.textContent = '검색 결과: 0개';
+        
+                return; // ✅ 여기서 종료. 아래 테스트지역 로직 실행 안됨
+            }
+        
+            // ✅ 테스트 지역만 보기일 경우
             const allCheckboxes = document.querySelectorAll('#controls input[type="checkbox"]');
             const allLabels = document.querySelectorAll('#controls label');
             const allTabs = document.querySelectorAll('.tab-content');
             const allTabButtons = document.querySelectorAll('.tab');
         
-            // 1. 모든 체크박스 해제
             allCheckboxes.forEach(cb => {
                 cb.checked = false;
                 cb.dispatchEvent(new Event('change'));
             });
         
-            // 2. 모든 label, h3, toggle button 숨김
             allLabels.forEach(label => label.style.display = 'none');
             document.querySelectorAll('.tab-content h3').forEach(h => h.style.display = 'none');
             document.querySelectorAll('.tab-content .toggle-button').forEach(btn => btn.style.display = 'none');
         
-            // 3. 모든 tab 숨김
             allTabs.forEach(tab => tab.style.display = 'none');
             allTabButtons.forEach(btn => btn.classList.remove('active'));
         
-            // 4. 테스트 지역만 표시
             let count = 0;
             const shownTabIds = new Set();
         
@@ -1237,13 +1318,11 @@
                 checkbox.dispatchEvent(new Event('change'));
         
                 const label = checkbox.closest('label');
-                if (label) {
-                    label.style.display = 'flex'; // ✅ 정확히 이 label만 보여줌
-                }
+                if (label) label.style.display = 'flex';
         
                 const tab = checkbox.closest('.tab-content');
                 if (tab && !shownTabIds.has(tab.id)) {
-                    tab.style.display = 'block'; // ✅ 탭 전체는 다시 표시
+                    tab.style.display = 'block';
                     shownTabIds.add(tab.id);
         
                     const tabButton = document.querySelector(`.tab[onclick="showTab('${tab.id}')"]`);
@@ -1253,12 +1332,9 @@
                 count++;
             });
         
-            // 5. 검색 결과 업데이트
             const countEl = document.getElementById('searchResultCount');
-            if (countEl) {
-                countEl.textContent = `검색 결과: ${count}개`;
-            }
-        });        
+            if (countEl) countEl.textContent = `검색 결과: ${count}개`;
+        });
 
         // 페이지 로드 후 NEW 태그 추가
         document.addEventListener('DOMContentLoaded', function () {
