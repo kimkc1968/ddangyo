@@ -82,54 +82,75 @@
         
         #searchBox {
             width: 100%;
-            padding: 10px;
+            padding: 10px 14px 10px 36px; /* 왼쪽 padding 넉넉히 */
             border: 1px solid #ccc;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            border-radius: 12px;
             font-size: 14px;
-            transition: border-color 0.2s;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
         }
         
         #searchBox:focus {
-            border-color: #007bff;
+            border-color: #3b82f6;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
             outline: none;
         }
         
         #searchResultCount {
             font-size: 13px;
             color: #777;
-            margin-bottom: 15px;
+            text-align: right;
+            margin-bottom: 10px;
         }
         
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
         #controls button {
             width: 100%;
             padding: 12px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: background 0.2s;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
         }
         
         #resetButton {
-            background-color: #ff4d4d;
+            background: linear-gradient(135deg, #ff4d4d, #e60000);
             color: white;
         }
         
         #resetButton:hover {
-            background-color: #e63c3c;
+            background: linear-gradient(135deg, #e63c3c, #cc0000);
+            transform: translateY(-1px);
         }
         
         #labelToggleButton {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
             color: white;
         }
         
         #labelToggleButton:hover {
-            background-color: #0062cc;
+            background: linear-gradient(135deg, #2563eb, #1e3a8a);
+            transform: translateY(-1px);
         }
         
         #controls label {
@@ -182,11 +203,13 @@
         }
         #searchBox {
             width: 100%;
-            margin-bottom: 10px;
-            padding: 8px;
+            padding: 10px 14px 10px 40px;  /* ← 왼쪽 padding을 36px → 40px으로 */
             border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            border-radius: 12px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
         }
         #searchResultCount {
             font-size: 14px;
@@ -376,43 +399,51 @@
             margin-bottom: 20px;
         }
 
+        /* 탭 버튼 스타일 */
         .tab-buttons {
-            display: flex;
-            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3개씩 */
+            gap: 12px;
+            margin: 20px 0;
+            justify-items: center;
         }
         
-        .tab {
-            flex: 1;
-            padding: 10px;
+        .tab-buttons .tab {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 40px;
+            padding: 0 20px;
+            background: #f1f1f1;
+            color: #333;
             font-size: 14px;
-            background: #f5f5f5;
+            font-weight: 500;
             border: none;
+            border-radius: 9999px; /* 완전 pill 형태 */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        .tab.active {
-            font-weight: bold;
-            background: white;
-            border-bottom: 2px solid #007bff;
-            color: #007bff;
+            transition: all 0.2s ease;
         }
         
-        .tab-content {
-            display: none;
+        .tab-buttons .tab:hover {
+            background: #e0e0e0;
         }
-        .tab-content.active {
+        
+        .tab-buttons .tab.active {
+            background: #3b82f6;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+        }
+        .tab-content {
             display: block;
         }
-        .toggle-button {
-            background-color: #f0f0f0;
-            color: #333;
-            transition: background-color 0.3s, color 0.3s;
-        }
         
-        .toggle-button.active {
-            background-color: #FF0000;
-            color: #fff;
+        .tab-content label {
+            display: flex !important;
+            align-items: center;
+            justify-content: flex-start;
         }
         
     </style>
@@ -467,53 +498,33 @@
                 margin: 0 0 15px;
             ">땡겨요 표준 권역</h2>
         
-            <input type="text" id="searchBox" placeholder="검색..." oninput="filterCheckboxes()" style="
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                margin-bottom: 10px;
-                font-size: 14px;
-            ">
+        <div class="search-wrapper">
+            <i class="fa fa-search search-icon"></i>
+            <input type="text" id="searchBox" placeholder="검색..." oninput="filterCheckboxes()" />
+        </div>
         
             <div id="searchResultCount" style="font-size: 13px; color: #777; margin-bottom: 15px;">검색 결과: 0개</div>
         
-            <button id="resetButton" onclick="resetSelections()" style="
-                width: 100%;
-                margin-bottom: 10px;
-                padding: 10px;
-                border: none;
-                cursor: pointer;
-                font-size: 14px;
-                border-radius: 8px;
-                background: #ff4d4d;
-                color: white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            ">선택 초기화</button>
+            <button id="resetButton" onclick="resetSelections()">
+                <i class="fa-solid fa-rotate-left" style="margin-right: 6px;"></i> 선택 초기화
+            </button>
         
-            <button id="labelToggleButton" onclick="toggleLabels()" style="
-                width: 100%;
-                margin-bottom: 10px;
-                padding: 10px;
-                border: none;
-                cursor: pointer;
-                font-size: 14px;
-                border-radius: 8px;
-                background: #007BFF;
-                color: white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            ">동이름 표시/숨기기</button>
-        </div>
+            <button id="labelToggleButton" onclick="toggleLabels()">
+                <i class="fa-solid fa-eye-slash" style="margin-right: 6px;"></i> 동이름 표시/숨기기
+            </button>
         
         <div class="tab-buttons">
             <button class="tab active" onclick="showTab('seoul')">서울</button>
             <button class="tab" onclick="showTab('gyeong-in')">경인</button>
-            <button class="tab" onclick="showTab('local')">지방</button>
+            <button class="tab" onclick="showTab('kangwon')">강원</button>
+            <button class="tab" onclick="showTab('choongchung')">충청</button>
+            <button class="tab" onclick="showTab('honam')">호남</button>
+            <button class="tab" onclick="showTab('kyeongsang')">경상</button>
         </div>
 
         <!-- 체크박스 그룹 -->
         <div id="seoul" class="tab-content active">
-            <button class="toggle-button" onclick="toggleAllInTab('seoul')">전체 선택</button>
+            <button class="toggle-button" onclick="toggleAllInTab('seoul')"> <i class="fa-solid fa-layer-group" style="margin-right: 6px;"></i> 전체 선택</button>
             <h3>서울특별시</h3>
         <label>
             <input type="checkbox" id="서울시 은평구-1" onchange="toggleData('서울시 은평구-1', './서울시 은평구-1.geojson')">
@@ -656,13 +667,18 @@
             경기도 김포시-2
         </label>
         </div>  
-            <div id="local" class="tab-content">
-            <button class="toggle-button" onclick="toggleAllInTab('local')">전체 선택</button>
+
+        <div id="kangwon" class="tab-content">
+            <button class="toggle-button" onclick="toggleAllInTab('kangwon')">전체 선택</button>
             <h3>강원도</h3>
         <label>
             <input type="checkbox" id="강원도 동해시-1" onchange="toggleData('강원도 동해시-1', './강원도 동해시-1.geojson')">
             강원도 동해시
         </label>
+        </div>  
+
+        <div id="choongchung" class="tab-content">
+        <button class="toggle-button" onclick="toggleAllInTab('choongchung')">전체 선택</button>
         <h3>충청북도</h3>
         <label>
             <input type="checkbox" id="충청북도 충주시-1" onchange="toggleData('충청북도 충주시-1', './충청북도 충주시-1.geojson')">
@@ -717,6 +733,10 @@
             <input type="checkbox" id="충청남도 대전시-2" onchange="toggleData('충청남도 대전시-2', './충청남도 대전시-2.geojson')">
             충청남도 대전시-2
         </label>
+        </div>
+
+        <div id="honam" class="tab-content">
+            <button class="toggle-button" onclick="toggleAllInTab('honam')">전체 선택</button>
         <h3>전북북도</h3>
         <label>
             <input type="checkbox" id="전라북도 군산시-1" onchange="toggleData('전라북도 군산시-1', './전라북도 군산시-1.geojson')">
@@ -756,6 +776,10 @@
             전라남도 광양시-3
         </label>
         <label>
+            <input type="checkbox" id="경상남도 무안군" onchange="toggleData('경상남도 무안군', './경상남도 무안군.geojson')">
+            전라남도 무안군
+        </label>
+        <label>
             <input type="checkbox" id="전라남도 목포시-1" onchange="toggleData('전라남도 목포시-1', './전라남도 목포시-1.geojson')">
             전라남도 목포시-1
         </label>
@@ -766,32 +790,6 @@
         <label>
             <input type="checkbox" id="전라남도 목포시-3" onchange="toggleData('전라남도 목포시-3', './전라남도 목포시-3.geojson')">
             전라남도 목포시-3
-        </label>
-        <h3>경상북도</h3>
-        <label>
-            <input type="checkbox" id="경상북도 경주시" onchange="toggleData('경상북도 경주시', './경상북도 경주시.geojson')">
-            경상북도 경주시
-        </label>
-        <label>
-            <input type="checkbox" id="경상북도 영주시" onchange="toggleData('경상북도 영주시', './경상북도 영주시.geojson')">
-            경상북도 영주시
-        </label>
-        <label>
-            <input type="checkbox" id="경상북도 구미시-1" onchange="toggleData('경상북도 구미시-1', './경상북도 구미시-1.geojson')">
-            경상북도 구미시-1
-        </label>
-        <label>
-            <input type="checkbox" id="경상북도 구미시-2" onchange="toggleData('경상북도 구미시-2', './경상북도 구미시-2.geojson')">
-            경상북도 구미시-2
-        </label>
-        <h3>경상남도</h3>
-        <label>
-            <input type="checkbox" id="경상남도 무안군" onchange="toggleData('경상남도 무안군', './경상남도 무안군.geojson')">
-            경상남도 무안군
-        </label>
-        <label>
-            <input type="checkbox" id="경상남도 창원시" onchange="toggleData('경상남도 창원시', './경상남도 창원시.geojson')">
-            경상남도 창원시
         </label>
         <h3>제주특별자치도</h3>
         <label>
@@ -812,7 +810,32 @@
         </label>
         </div>
 
+        <div id="kyeongsang" class="tab-content">
+            <button class="toggle-button" onclick="toggleAllInTab('kyeongsang')">전체 선택</button>
+        <h3>경상북도</h3>
+        <label>
+            <input type="checkbox" id="경상북도 경주시" onchange="toggleData('경상북도 경주시', './경상북도 경주시.geojson')">
+            경상북도 경주시
+        </label>
+        <label>
+            <input type="checkbox" id="경상북도 영주시" onchange="toggleData('경상북도 영주시', './경상북도 영주시.geojson')">
+            경상북도 영주시
+        </label>
+        <label>
+            <input type="checkbox" id="경상북도 구미시-1" onchange="toggleData('경상북도 구미시-1', './경상북도 구미시-1.geojson')">
+            경상북도 구미시-1
+        </label>
+        <label>
+            <input type="checkbox" id="경상북도 구미시-2" onchange="toggleData('경상북도 구미시-2', './경상북도 구미시-2.geojson')">
+            경상북도 구미시-2
+        </label>
+        <h3>경상남도</h3>
+        <label>
+            <input type="checkbox" id="경상남도 창원시" onchange="toggleData('경상남도 창원시', './경상남도 창원시.geojson')">
+            경상남도 창원시
+        </label>
         </div>
+
     </div>
     <div id="toggleButton" onclick="toggleControls()">메뉴</div>
 
@@ -1004,7 +1027,7 @@
         
                     // 모든 label, h3, 버튼 보이게
                     tab.querySelectorAll('label').forEach(label => {
-                        label.style.display = 'block';
+                        label.style.display = 'flex';
                     });
                     tab.querySelectorAll('h3').forEach(h => h.style.display = 'block');
                     tab.querySelectorAll('.toggle-button').forEach(b => b.style.display = 'block');
