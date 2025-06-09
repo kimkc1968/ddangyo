@@ -512,7 +512,7 @@
         
         <div class="search-wrapper">
             <i class="fa fa-search search-icon"></i>
-            <input type="text" id="searchBox" placeholder="검색..." oninput="filterCheckboxes()" />
+            <input type="text" id="searchBox" placeholder="검색..."/>
         </div>
         
             <div id="searchResultCount" style="font-size: 13px; color: #777; margin-bottom: 15px;">검색 결과: 0개</div>
@@ -681,6 +681,26 @@
         <label>
             <input type="checkbox" id="경기도 김포시-2" onchange="toggleData('경기도 김포시-2', './경기도 김포시-2.geojson')">
             경기도 김포시-2
+        </label>
+        <label>
+            <input type="checkbox" id="경기도 성남시-1" onchange="toggleData('경기도 성남시-1', './경기도 성남시-1.geojson')">
+            경기도 성남시
+        </label>
+        <label>
+            <input type="checkbox" id="경기도 시흥시-1" onchange="toggleData('경기도 시흥시-1', './경기도 시흥시-1.geojson')">
+            경기도 시흥시-1
+        </label>
+        <label>
+            <input type="checkbox" id="경기도 시흥시-2" onchange="toggleData('경기도 시흥시-2', './경기도 시흥시-2.geojson')">
+            경기도 시흥시-2
+        </label>
+        <label>
+            <input type="checkbox" id="경기도 포천시-1" onchange="toggleData('경기도 포천시-1', './경기도 포천시-1.geojson')">
+            경기도 포천시-1
+        </label>
+        <label>
+            <input type="checkbox" id="경기도 포천시-2" onchange="toggleData('경기도 포천시-2', './경기도 포천시-2.geojson')">
+            경기도 포천시-2
         </label>
         </div>  
 
@@ -1066,60 +1086,48 @@
             if (result) result.textContent = `검색 결과: 0개`;
         }
 
-function filterCheckboxes() {
-    const input = document.getElementById('searchBox').value.toLowerCase();
-    const labels = document.querySelectorAll('#controls label');
-    const tabs = document.querySelectorAll('.tab-content');
-    const tabButtons = document.querySelectorAll('.tab');
-    const headings = document.querySelectorAll('.tab-content h3');
-    const toggleButtons = document.querySelectorAll('.tab-content .toggle-button');
-    let matchCount = 0;
-    const matchedTabs = new Set();
-
-    // 모든 label 숨김
-    labels.forEach(label => label.style.display = 'none');
-    // 모든 탭 숨김
-    tabs.forEach(tab => tab.style.display = 'none');
-    // 모든 탭 버튼 비활성화
-    tabButtons.forEach(btn => btn.classList.remove('active'));
-    // h3, toggle 버튼 숨김
-    headings.forEach(h => h.style.display = 'none');
-    toggleButtons.forEach(btn => btn.style.display = 'none');
-
-    // 일치 항목만 처리
-    labels.forEach(label => {
-        const checkbox = label.querySelector('input[type="checkbox"]');
-        if (!checkbox) return;
-
-        const labelText = label.textContent.toLowerCase();
-        if (labelText.includes(input)) {
-            label.style.display = 'flex';
-            const tab = label.closest('.tab-content');
-            if (tab) {
-                matchedTabs.add(tab.id); // 해당 탭 기록
-            }
-            matchCount++;
+        function filterCheckboxes() {
+            const input = document.getElementById('searchBox').value.toLowerCase();
+            const labels = document.querySelectorAll('#controls label');
+            const tabs = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab');
+            const headings = document.querySelectorAll('.tab-content h3');
+            const toggleButtons = document.querySelectorAll('.tab-content .toggle-button');
+            let matchCount = 0;
+        
+            // 1. 모든 label, tab 숨김
+            labels.forEach(label => label.style.display = 'none');
+            headings.forEach(h => h.style.display = 'none');
+            toggleButtons.forEach(btn => btn.style.display = 'none');
+            tabs.forEach(tab => tab.style.display = 'none');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+        
+            // 2. 검색어와 일치하는 label만 표시
+            labels.forEach(label => {
+                const checkbox = label.querySelector('input[type="checkbox"]');
+                if (!checkbox) return;
+        
+                const labelText = label.textContent.toLowerCase();
+                if (labelText.includes(input)) {
+                    label.style.display = 'flex';
+        
+                    const tab = label.closest('.tab-content');
+                    if (tab) {
+                        tab.style.display = 'block'; // ✅ 해당 label이 포함된 tab만 열기
+                        const h3 = tab.querySelector('h3');
+                        const toggleBtn = tab.querySelector('.toggle-button');
+                        if (h3) h3.style.display = 'block';
+                        if (toggleBtn) toggleBtn.style.display = 'inline-block';
+                    }
+        
+                    matchCount++;
+                }
+            });
+        
+            // 3. 검색 결과 갱신
+            const result = document.getElementById('searchResultCount');
+            if (result) result.textContent = `검색 결과: ${matchCount}개`;
         }
-    });
-
-    // 일치한 탭만 표시 + 헤더/버튼 복원
-    matchedTabs.forEach(tabId => {
-        const tab = document.getElementById(tabId);
-        if (tab) tab.style.display = 'block';
-
-        const tabBtn = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
-        if (tabBtn) tabBtn.classList.add('active');
-
-        const h3 = tab.querySelector('h3');
-        const toggleBtn = tab.querySelector('.toggle-button');
-        if (h3) h3.style.display = 'block';
-        if (toggleBtn) toggleBtn.style.display = 'inline-block';
-    });
-
-    // 검색 결과 갱신
-    const result = document.getElementById('searchResultCount');
-    if (result) result.textContent = `검색 결과: ${matchCount}개`;
-}
 
 
         function toggleAllInTab(tabId) {
@@ -1181,7 +1189,7 @@ function filterCheckboxes() {
 
 // 신규 태그 추가
         function addNewTags() {
-            const newItems = ['강남구']; // NEW 표시를 추가할 체크박스 ID 리스트
+            const newItems = ['경기도 성남시-1','경기도 시흥시-1','경기도 시흥시-2','경기도 포천시-1','경기도 포천시-2']; // NEW 표시를 추가할 체크박스 ID 리스트
             newItems.forEach(id => {
                 const checkbox = document.getElementById(id);
                 if (checkbox) {
@@ -1199,7 +1207,7 @@ function filterCheckboxes() {
 
 // 변경 태그 추가 
     function addChangedTags() {
-        const newItems = ['서울시 마포구-1','서울시 마포구-2','서울시 양천구-1','서울시 강서구-1','서울시 관악구-1','서울시 강남구-1','서울시 서초구-1','서울시 은평구-1','서울시 강동구-1','서울시 강동구-2','서울시 용산구-1','서울시 중구-1','서울시 종로구-1','서울시 강북도봉구-1','서울시 광진구-1','서울시 성동구-1','서울시 노원구-1','서울시 구로구-2','서울시 동작구-1','서울시 영등포구-1','서울시 중랑구-1','서울시 동대문구-1','서울시 성북구-1','서울시 금천구-1'];
+        const newItems = ['서울시 금천구-5'];
         newItems.forEach(id => {
             const checkbox = document.getElementById(id);
             if (checkbox) {
@@ -1242,11 +1250,24 @@ function filterCheckboxes() {
         document.getElementById('popup').style.display='none';
     }
 
-        document.addEventListener('DOMContentLoaded',()=>{
-            if(getCookie('hidePopupOneDay')==='true'){
-                document.getElementById('popup').style.display='none';
-            }
-        });
+    document.addEventListener('DOMContentLoaded', () => {
+        // 안전하게 DOM 로드 후 연결
+        window.toggleControls = function() {
+            const controls = document.getElementById('controls');
+            controls.classList.toggle('open');
+        };
+    
+        // 검색 필터링 연결
+        const searchBox = document.getElementById('searchBox');
+        if (searchBox) {
+            searchBox.addEventListener('input', filterCheckboxes);
+        }
+    
+        // 팝업 쿠키 처리
+        if (getCookie('hidePopupOneDay') === 'true') {
+            document.getElementById('popup').style.display = 'none';
+        }
+    });
 
         document.getElementById('toggleButton').addEventListener('click', function() {
             var controls = document.getElementById('controls');
@@ -1334,6 +1355,15 @@ function filterCheckboxes() {
         
             const countEl = document.getElementById('searchResultCount');
             if (countEl) countEl.textContent = `검색 결과: ${count}개`;
+        });
+
+        function toggleControls() {
+            const controls = document.getElementById('controls');
+            controls.classList.toggle('open');
+        }
+        document.getElementById('toggleButton').addEventListener('click', function () {
+            const controls = document.getElementById('controls');
+            controls.classList.toggle('open');
         });
 
         // 페이지 로드 후 NEW 태그 추가
