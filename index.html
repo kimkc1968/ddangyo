@@ -675,12 +675,12 @@
             <button class="toggle-button" onclick="toggleAllInTab('gyeong-in')">전체 선택</button>
             <h3>인천광역시</h3>
         <label>
-            <input type="checkbox" id="인천광역시 남동구-1" onchange="toggleData('인천광역시 남동구-1', './인천광역시 남동구-1.geojson')">
-            인천광역시 남동구-1
+            <input type="checkbox" id="인천시 남동구-1" onchange="toggleData('인천시 남동구-1', './인천시 남동구-1.geojson')">
+            인천시 남동구-1
         </label>
                 <label>
-            <input type="checkbox" id="인천광역시 남동구-2" onchange="toggleData('인천광역시 남동구-2', './인천광역시 남동구-2.geojson')">
-            인천광역시 남동구-2
+            <input type="checkbox" id="인천시 남동구-2" onchange="toggleData('인천시 남동구-2', './인천시 남동구-2.geojson')">
+            인천시 남동구-2
         </label>
         <div id="gyeong-in" class="tab-content">
             <button class="toggle-button" onclick="toggleAllInTab('gyeong-in')">전체 선택</button>
@@ -1205,7 +1205,7 @@
 
 // 신규 태그 추가
         function addNewTags() {
-            const newItems = ['인천광역시 남동구-1','인천광역시 남동구-2']; // NEW 표시를 추가할 체크박스 ID 리스트
+            const newItems = ['인천시 남동구-1','인천시 남동구-2']; // NEW 표시를 추가할 체크박스 ID 리스트
             newItems.forEach(id => {
                 const checkbox = document.getElementById(id);
                 if (checkbox) {
