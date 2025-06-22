@@ -671,6 +671,17 @@
             서울시 송파구-5
         </label>
         </div>
+                <div id="gyeong-in" class="tab-content">
+            <button class="toggle-button" onclick="toggleAllInTab('gyeong-in')">전체 선택</button>
+            <h3>인천광역시</h3>
+        <label>
+            <input type="checkbox" id="인천광역시 남동구-1" onchange="toggleData('인천광역시 남동구-1', './인천광역시 남동구-1.geojson')">
+            인천광역시 남동구-1
+        </label>
+                <label>
+            <input type="checkbox" id="인천광역시 남동구-2" onchange="toggleData('인천광역시 남동구-2', './인천광역시 남동구-2.geojson')">
+            인천광역시 남동구-1
+        </label>
         <div id="gyeong-in" class="tab-content">
             <button class="toggle-button" onclick="toggleAllInTab('gyeong-in')">전체 선택</button>
             <h3>경기도</h3>
@@ -683,12 +694,8 @@
             경기도 김포시-2
         </label>
         <label>
-            <input type="checkbox" id="경기도 성남시-1" onchange="toggleData('경기도 성남시-1', './경기도 성남시-1.geojson')">
+            <input type="checkbox" id="경기도 성남시" onchange="toggleData('경기도 성남시-1', './경기도 성남시-1.geojson')">
             경기도 성남시-1
-        </label>
-                <label>
-            <input type="checkbox" id="경기도 성남시-2" onchange="toggleData('경기도 성남시-2', './경기도 성남시-2.geojson')">
-            경기도 성남시-2
         </label>
         <label>
             <input type="checkbox" id="경기도 시흥시-1" onchange="toggleData('경기도 시흥시-1', './경기도 시흥시-1.geojson')">
@@ -1199,7 +1206,7 @@
 
 // 신규 태그 추가
         function addNewTags() {
-            const newItems = ['경기도 성남시-1','경기도 성남시-2','경기도 시흥시-1','경기도 시흥시-2','경기도 포천시-1','경기도 포천시-2']; // NEW 표시를 추가할 체크박스 ID 리스트
+            const newItems = ['인천광역시 남동구-1','인천광역시 남동구-2']; // NEW 표시를 추가할 체크박스 ID 리스트
             newItems.forEach(id => {
                 const checkbox = document.getElementById(id);
                 if (checkbox) {
@@ -1217,7 +1224,7 @@
 
 // 변경 태그 추가 
     function addChangedTags() {
-        const newItems = ['서울시 금천구-5'];
+        const newItems = ['경기도 성남시-1'];
         newItems.forEach(id => {
             const checkbox = document.getElementById(id);
             if (checkbox) {
